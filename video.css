@@ -1,28 +1,38 @@
-body{
-    background-color: black;
-}
 *{
-    margin: 0 ;
+    /* margin: 0 ; */
+    font-family: "Poppins", sans-serif;
+    font-family: "Source Sans Pro", sans-serif;
 }
+  .video-details {
+    color: white ;
+  }
+  .root-container {
+    margin-top:30px;
+    display: grid;
+    grid-template-columns: 5fr 2fr;
+  }
+  
+  #comments-container{
+   background-color: black;
+   border-radius: 10px;
+   color:white;
+   max-height:650px;
+   overflow-y: scroll;
+  }
 .video-details{
     display: flex;
     justify-content: space-between;
-    align-items: center;
-    width: 800px;
-    background-color: rgba(151, 150, 150, 0.364);
-    color: white;
-    padding: 20px;
+    align-items: center;color: black;
     border-radius: 10px;
 }
 .stats {
     display: flex;
     align-items: center;
-    gap: 50px;
 }
 .like-container {
     display: flex;
     flex-direction: row;
-    gap: 20px;
+    gap: 10px;
     cursor: pointer;
 }
 .like {
@@ -35,12 +45,14 @@ body{
     display: flex;
     align-items: center;
     gap: 5px;
+    margin-right: 50px;
+    margin-left: 15px;
 }
 
 .owner-details{
     display: flex;
     flex-direction: column;
-    color: gray;
+    color: black;
 }
 
 .profile{
@@ -54,13 +66,14 @@ body{
 }
 #title {
     margin: 20px;
+    color:black;
 }
 
 .comment {
     display: flex;
     gap: 20px;
-    color: white ;
-    padding: 20px;
+    color: red ;
+    padding: 10px;
 }
 .comment > img, .comment-reply > img {
     width: 40px;
@@ -74,10 +87,10 @@ body{
 }
 .comment span {
     font-size: 14px !important;
-    color: gray
+    color: white
 }
 .comment p {
-    color: gray ;
+    color: white ;
     width: 100%;
 }
 .options {
@@ -85,14 +98,37 @@ body{
     cursor: pointer;
 }
 .reply{
-    background-color: transparent;
-    color: gray ;
+    background-color: black;
+    color: blue ;
     border: none ;
     cursor: pointer;
 }
 .reply:hover {
-    color: rgb(233, 223, 223) ;
+    color: white;
 }
 .comment-reply{
     padding-left: 10px;
+}
+.video-Container {
+    padding-left: 50px;
+}
+
+@media screen and (max-width:768px) {
+    #play{
+        width:400px;
+        height:300px;
+        padding: 0px;
+        margin-left: -40px;
+    }
+    .root-container{
+        display: flex;
+        flex-direction: column;
+        /* justify-content: space-around; */
+        width:80%;
+    }
+    #comments-container{
+        width:125%;
+        justify-content: center;
+        align-items: center;
+    }
 }
