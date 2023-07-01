@@ -1,100 +1,148 @@
-const searchInput = document.getElementById("search-input");
-const apiKey = "AIzaSyClDvp4MD65N6xtWIsy6pRsOxKJwBgu9fw";
+const searchInput = document.getElementById("searchBar");
+// const apiKey = "AIzaSyDsig-SzLP_5kicvhamY8ZgnXMmg5zK16g";
+const apiKey = "AIzaSyDMgL3wykeqn_YgepTEaOSz47aMKE8t2to";
 localStorage.setItem("api_key", apiKey);
-const container = document.getElementById("container");
+const videoContainer = document.getElementById("videoContainer");
+// endpoint
+// https://youtube.googleapis.com/youtube/v3/serach?part=snippet,
+// statistics&maxResult=1&q=mycodeschool&key=(myapikey)
+// https://youtube.googleapis.com/youtube/v3/search?part=snippet&maxResult=2&q=cats&key=AIzaSyDA-OAXPNXvgwW-9iZVRoICyxIRWNoO1h8
 
-/*
-    https://youtube.googleapis.com/youtube/v3/search?part=snippet,statistics&maxResults=1&q=mycodeschool&key=AIzaSyBprXFgJkoIn4TkCLOCXd9HLOujKmt9evk
-*/
-function searchVideos() {
-  let searchValue = searchInput.value;
-  // fetch the list of videos for this searchValue
-  fetchVideos(searchValue);
+// default function which is used to display random videos once the page load
+
+window.addEventListener('load', ()=> {
+    var text = document.getElementById("text");
+    function display(){
+        text.classList.add("hidden");
+        videoContainer.classList.remove("hidden");
+        searchVideos();
+    }
+    
+    setTimeout(display, 3000);
+})
+
+function searchVideos()
+{
+    let searchValue = searchInput.value;
+
+    // fetch the videos
+    fetchVideos(searchValue);
 }
 
-async function fetchVideos(searchValue) {
-  // make api call
+async function fetchVideos(searchValue){
+    // api call
+    let endPoint = `https://youtube.googleapis.com/youtube/v3/search?part=
+    snippet&maxResults=40&q=${searchValue}&key=${apiKey}`
 
-  let endpoint = `https://youtube.googleapis.com/youtube/v3/search?part=snippet&maxResults=10&q=${searchValue}&key=${apiKey}`;
+    try{
+      let response = await fetch(endPoint);
+      let result = await response.json();
+      for(let i=0; i<result.items.length; i++){
+        let video = result.items[i];
+        let videoStats =   await fetchStats(video.id.videoId);
 
-  try {
-    let response = await fetch(endpoint); // response is instance of Response class
-    let result = await response.json();
-    for(let i = 0 ; i < result.items.length; i++) {
-        let video = result.items[i] ;
-        let videoStats = await fetchStats(video.id.videoId)
+ 
         if(videoStats.items.length > 0)
-            result.items[i].videoStats = videoStats.items[0].statistics; 
-            result.items[i].duration = videoStats.items[0] && videoStats.items[0].contentDetails.duration
+        result.items[i].videoStats = videoStats.items[0].statistics;
+        result.items[i].duration = videoStats.items[0] && videoStats.items[0].contentDetails.duration;  
     }
-    showThumbnails(result.items);
-  } catch (error) {
-    console.log("Something went wrong", error);
-  }
+      console.log(result)
+
+      showThumbnails(result.items);
+    }
+    catch(error){
+        alert("Something Wrong");
+    }
 }
 
-function getViews(n){
-    if(n < 1000) return n ;
-    else if ( n >= 1000 && n <= 999999){
+// get views function
+
+function getViews(n)
+{
+    if(n < 1000) return n;
+    else if(n >= 1000 && n <= 999999){
         n /= 1000;
-        n = parseInt(n)
-        return n+"K" ;
+        n = parseInt(n);
+        return n+"K";
     }
-    return parseInt(n / 1000000) + "M" ;
+    return parseInt(n / 1000000) + "M"
 }
 
-function showThumbnails(items) {
-  for (let i = 0; i < items.length; i++) {
-    let videoItem = items[i];
-    let imageUrl = videoItem.snippet.thumbnails.high.url;
-    let videoElement = document.createElement("div");
-
-    videoElement.addEventListener("click", () => {
-      navigateToVideo(videoItem.id.videoId);
-    })
-
-    const videoChildren = `
-        <img src="${imageUrl}" />
-        <b>${formattedData(videoItem.duration)}</b>
-        <p class="title">${videoItem.snippet.title}</p>
-        <p class="channel-name">${videoItem.snippet.channelTitle}</p>
-        <p class="view-count">${videoItem.videoStats ? getViews(videoItem.videoStats.viewCount) + "  Views": "NA"}</p>
-    `;
-    videoElement.innerHTML = videoChildren ;
-    container.append(videoElement);
-  }
-}
-async function fetchStats(videoId){ 
-   const endpoint = `https://www.googleapis.com/youtube/v3/videos?key=${apiKey}&part=statistics,contentDetails&id=${videoId}`;
-   let response = await fetch(endpoint); 
-   let result = await response.json();
-   return result ;
-}
-function formattedData(duration) {
-    if(!duration) return "NA" ;
-    // PT2H33M23S
-    let hrs = duration.slice(2, 4);
-    let mins = duration.slice(5, 7);
-    let seconds ;
-    if(duration.length > 8){
-        seconds = duration.slice(8, 10);
+function formattedData(n){
+    if(!n) return "NA";
+//   PT02H33M22S
+    let hrs = n.slice(2,4);
+    let mins = n.slice(5,7);
+    let sec ;
+    if(n.length > 8){
+        sec = n.slice(8,10);
     }
     let str = `${hrs}:${mins}`;
-    seconds && (str += `:${seconds}`)
-    return str ;
+    sec && (str +=  `${sec}`)
+    return str;
 }
-  
+
+
+
+
+function showThumbnails(items){
+    for(let i=0; i<items.length; i++){
+        let videoItem = items[i]; 
+        let imageUrl = videoItem.snippet.thumbnails.high.url;
+        let videoElement = document.createElement("div");
+        videoElement.addEventListener("click", () =>{
+            navigateToVideo(videoItem.id.videoId);
+        });
+
+       const videoChildren = `
+       <img src = "${imageUrl}" />
+       <b>${formattedData(videoItem.duration)}</b>
+       <p class="title">${videoItem.snippet.title}</p>
+       <p class="channelName">${videoItem.snippet.channelTitle}</>
+       <p class="viewsCount">${videoItem.videoStats ? getViews(videoItem.videoStats.viewCount) + " Views": "NA"}</p>
+       `;
+       videoElement.innerHTML = videoChildren;
+        
+        videoContainer.append(videoElement);
+    }
+}
+
+
+// video fetch api
+async function fetchStats(videoId){
+  const endPoint = `https://www.googleapis.com/youtube/v3/videos?key=${apiKey}&part=statistics,contentDetails&id=${videoId}`;
+  let response =  await fetch(endPoint);
+  let result = await response.json();
+  return result;
+}
+
 function navigateToVideo(videoId){
-  let path = `/Youtube-Clone/video.html`;
-  if(videoId){
- // video_id: video_id
-    document.cookie = `video_id=${videoId}; path=${path}`
-    let linkItem = document.createElement("a");
-    linkItem.href = "http://127.0.0.1:5500/Youtube-Clone/video.html"
-    linkItem.target = "_blank" ;
-    linkItem.click();
-  }
-  else {
-    alert("Go and watch in youtube")
-  }
+    // http://127.0.0.1:5500/video.html
+    let path = "/video.html";
+    document.cookie = `video_id=${videoId}; path=${path}`;
+
+    if(videoId){
+        let linkItem = document.createElement("a");
+        linkItem.href = "./video.html";
+        // linkItem.target = "_blank";
+        linkItem.click();
+    }else{
+        alert("Go and Watch a video on youtube");
+    }
 }
+
+// fetch channel logo
+function ChannelLogo(videoId) {
+    const endPoint = `https://www.googleapis.com/youtube/v3/channels?part=snippet&id=${videoId}&key=${apiKey}`;
+  
+    fetch(endPoint)
+      .then(response => response.json())
+      .then(data => {
+        const channelLogo = videoItem.items[0].snippet.thumbnails.default.url;
+        console.log(channelLogo);
+      })
+      .catch(error => {
+        console.error('Error:', error);
+      });
+  }
+  
