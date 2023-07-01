@@ -8,9 +8,9 @@ firstScript.addEventListener("load", onLoadScript)
 
 function onLoadScript() {
   if (YT) {
-    new YT.Player("aravind", {
+    new YT.Player("play", {
       height: "500",
-      width: "850",
+      width: "1000",
       videoId,
       events: {
         onReady: (event) => {
@@ -22,6 +22,8 @@ function onLoadScript() {
     });
   }
 }
+// const playFrame = document.getElementById("play_frame");
+// playFrame.src=`https://www.youtube.com/embed/${videoId}`;
 
 const statsContainer = document.getElementsByClassName("video-details")[0] ;
 
@@ -35,13 +37,12 @@ async function extractVideoDetails(videoId){
         renderComments(result.items);
     }
     catch(error){
-        console.log(`Error occured`, error)
+        console.log( error)
     }
     
 }
 
-async function  fetchStats(videoId){
-    console.log("Inside fetchStats")
+async function fetchStats(videoId){
     let endpoint = `https://www.googleapis.com/youtube/v3/videos?part=snippet,statistics&key=${apiKey}&id=${videoId}`;
     try {
         const response = await fetch(endpoint);
@@ -49,14 +50,14 @@ async function  fetchStats(videoId){
         const item = result.items[0] ;
         const title = document.getElementById("title");
         title.innerText = item.snippet.title ;
-        title.style.color = "white";
+        title.style.color = "black";
         title.style.fontSize = "20px"
         statsContainer.innerHTML = `
         <div class="profile">
                 <img src="https://i.ytimg.com/vi/D-qj0L68RhQ/default.jpg" class="channel-logo" alt="">
                 <div class="owner-details">
-                    <span style="color: white ">${item.snippet.channelTitle}</span>
-                    <span>20 subscribers</span>
+                    <span>${item.snippet.channelTitle}</span>
+                    <span>${item.statistics.subscriberCount}</span>
                 </div>
         </div>
         <div class="stats">
@@ -67,6 +68,7 @@ async function  fetchStats(videoId){
                 </div>
                 <div class="like">
                     <span class="material-icons">thumb_down</span>
+                    <span>${item.statistics.dislikeCount}</span>
                 </div>
             </div>
             <div class="comments-container">
@@ -94,7 +96,7 @@ function renderComments(commentsList) {
         let commentElement = document.createElement("div");
         commentElement.className = "comment" ;
         commentElement.innerHTML = `
-                <img src="${topLevelComment.snippet.authorProfileImageUrl}" alt="">
+                <img src="${topLevelComment.snippet.authorProfileImageUrl}" alt="image">
                 <div class="comment-right-half">
                     <b>${topLevelComment.snippet.authorDisplayName
                     }</b>
@@ -154,3 +156,4 @@ async function loadComments(element){
     catch(error){
 
     }
+}
