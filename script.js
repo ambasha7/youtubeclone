@@ -1,6 +1,6 @@
 const searchInput = document.getElementById("searchBar");
 // const apiKey = "AIzaSyDsig-SzLP_5kicvhamY8ZgnXMmg5zK16g";
-const apiKey = "AIzaSyDMgL3wykeqn_YgepTEaOSz47aMKE8t2to";
+const apiKey = "AIzaSyB_LwFM2B5kH5UuV18wr9umZXbU8YMm_II";
 localStorage.setItem("api_key", apiKey);
 const videoContainer = document.getElementById("videoContainer");
 // endpoint
