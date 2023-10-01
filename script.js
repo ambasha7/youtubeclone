@@ -52,6 +52,7 @@ async function fetchVideos(searchValue){
     }
     catch(error){
         alert("Something Wrong");
+        console.log(error);
     }
 }
 
